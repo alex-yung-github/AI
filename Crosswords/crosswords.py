@@ -576,8 +576,8 @@ def getScore(board):
 
 # getInputDebug()
 # myLines = open(args[0],'r').read().splitlines()
-# getInputDebug()
-getInput(args)
+getInputDebug()
+# getInput(args)
 startboard = loading()
 
 # print()
