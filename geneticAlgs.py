@@ -5,6 +5,7 @@ import string
 import random
 n = 0
 alphabet = "abcdefghijklmnopqrstuvwxyz"
+alphabetlist = ['a', 'b', 'c', 'd','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 punctuation = string.punctuation
 frequencydict = {}
 usedciphers = set()
@@ -47,8 +48,8 @@ def getInputHillDebug():
 
 def getInputGenAlg():
     global n, encodedText
-    n = sys.argv[1]
-    encodedText = sys.argv[2]
+    n = 4
+    encodedText = sys.argv[1]
     return encodedText
 
 def getInputGenAlgDebug():
@@ -126,7 +127,7 @@ def getRandomCipher():
     return temp
 
 def hillClimb():
-    etext = getInputHillDebug()
+    etext = getInputHill()
     count = 0
     cipher = getRandomCipher()
     best = hillClimbHelper(etext, cipher)
@@ -232,19 +233,19 @@ def breeding(parents):
 
 def mutation(child):
     global usedciphers
-    if(random.random() < MUTATION_RATE):
+    #random.select() automatically choozes 2 thingies 
+    m = random.random()
+    # print(m)
+    if(m < MUTATION_RATE):
         toReturn = child
-        range = len(toReturn)-1
-        randint1 = random.randint(0, range)
-        randint2 = random.randint(0, range)
-        while(randint2 == randint1):
-            randint2 = random.randrange(0, range)
+        tem = random.sample(alphabetlist, 2)
+        # print(tem)
+        randint1 = int(toReturn.index(tem[0]))
+        randint2 = int(toReturn.index(tem[1]))
+        # print(randint1, randint2)
         temp1 = toReturn[randint1:randint1+1]
         toReturn = toReturn[0:randint1] + toReturn[randint2:randint2+1]+ toReturn[randint1+1:]
         toReturn = toReturn[0:randint2] + temp1 + toReturn[randint2+1:]
-        usedciphers.add(toReturn)
-        if(toReturn in usedciphers):
-            return mutation(child)
         return toReturn
     else:
         return child
@@ -253,34 +254,41 @@ def getInitChildren(n):
     toReturn = []
     for i in range(n):
         pop = population(TOURNEY_SIZE*2)
+        # print(pop)
         pop = convertWithScores(pop)
+        # print(pop)
         par = selection(pop)
+        # print(par)
         child = breeding(par)
+        # print(child)
         mutantchild = mutation(child)
+        # print(mutantchild)
+        # print("same") if mutantchild == child else print("mutated")
         toReturn.append(mutantchild)
     return toReturn
 
 def genAlg(etext):
     count = 1
-    cInit = getInitChildren(300)
+    cInit = getInitChildren(500)
     cScoresInit = convertWithScores(cInit)
     cScoresInit.sort(reverse = True)
-    print(cScoresInit)
+    # print(cScoresInit)
     bestcipher = cScoresInit[0][1]
-    print(bestcipher)
+    # print(bestcipher)
 
     while(count < 500):
         newgen = []
-        for i in range(300):
+        for i in range(POPULATION_SIZE):
             newSel = selection(cScoresInit)
             newChild = breeding(newSel)
             newMutChild = mutation(newChild)
             newgen.append(newMutChild)
-
         cScoresInit = newgen
         cScoresInit = convertWithScores(cScoresInit)
-        cScoresInit.sort()
+        cScoresInit.sort(reverse = True)
         print(cScoresInit[0])
+        print(decodeInit(etext, cScoresInit[0][1]))
+        print()
         count+=1
 
     
@@ -306,8 +314,8 @@ fillFreqDict()
 # print("Score: ", hill[0])
 # print()
 
-#Genetic Alg
-etext = getInputGenAlgDebug()
+#Genetic Alg input: py geneticAlg.py (n) (encodedtext)
+etext = getInputGenAlg()
 thing = genAlg(etext)
 
 
