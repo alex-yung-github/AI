@@ -1,0 +1,61 @@
+Orientations of piece I:
+
+      #
+      #
+      #
+####  #
+
+ 0    1
+
+
+Orientations of piece O:
+
+##
+##
+
+0
+
+
+Orientations of piece T:
+
+     #         #
+ #   ##  ###  ##
+###  #    #    #
+
+ 0   1    2    3
+
+
+Orientations of piece S:
+
+     #
+ ##  ##
+##    #
+
+ 0    1
+
+
+Orientations of piece Z:
+
+      #
+##   ##
+ ##  #
+
+ 0   1
+
+
+Orientations of piece J:
+
+     ##        #
+#    #   ###   #
+###  #     #  ##
+
+ 0   1    2    3
+
+
+Orientations of piece L:
+
+     #        ##
+  #  #   ###   #
+###  ##  #     #
+
+ 0   1    2    3
