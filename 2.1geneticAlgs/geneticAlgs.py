@@ -27,8 +27,8 @@ def getInputFitness():
 
 def getDebugInputFitness():
     global n
-    n = 4
-    texttype = "encoded"
+    n = 3
+    texttype = "decoded"
     encodedtext = "XMTP  CGPQR  BWEKNJB  GQ  OTGRB  EL  BEQX  BWEKNJB,  G  RFGLI.	GR  GQ  BEQX ABSETQB  RFGQ  QBLRBLSB  TQBQ  EJJ  RBL  KMQR  SMKKML  VMPYQ  GL  BLDJGQF: ‘G  FEUB  RM  AB  E  DMMY  QRTYBLR  GL  RFER  SJEQQ  GL  RFB  PMMK  MC  RFER RBESFBP.’".lower()
     candidalph = "XRPHIWGSONFQDZEYVJKMATUCLB".lower()
     return (encodedtext, candidalph, texttype)
@@ -127,7 +127,7 @@ def getRandomCipher():
     return temp
 
 def hillClimb():
-    etext = getInputHill()
+    etext = getInputHillDebug()
     count = 0
     cipher = getRandomCipher()
     best = hillClimbHelper(etext, cipher)
@@ -147,13 +147,13 @@ def hillClimbHelper(etext, initcipher):
     # grams = getNGrams(dtext)
     # score = calcumalations(grams)
     score = fitness("decoded", dtext, initcipher)
-    # print()
-    # print("Cipher: ", initcipher)
-    # print()
-    # print("Decoded Text: ", dtext)
-    # print()
-    # print("Score: ", score)
-    # print()
+    print()
+    print("Cipher: ", initcipher)
+    print()
+    print("Decoded Text: ", dtext)
+    print()
+    print("Score: ", score)
+    print()
     return (score, dtext)
 
 def swap(text):
@@ -273,8 +273,6 @@ def genAlg(etext):
     cScoresInit = convertWithScores(cInit)
     cScoresInit.sort(reverse = True)
     # print(cScoresInit)
-    bestcipher = cScoresInit[0][1]
-    # print(bestcipher)
 
     while(count < 500):
         newgen = []
@@ -305,18 +303,18 @@ fillFreqDict()
 # print(fit)
 
 #hillClimb input: py fitness.py (n) (encodedtext)
-# hill = hillClimb()
-# print()
-# print("Text: ", hill[1])
-# print()
-# print("Cipher: ", hill[2])
-# print()
-# print("Score: ", hill[0])
-# print()
+hill = hillClimb()
+print()
+print("Text: ", hill[1])
+print()
+print("Cipher: ", hill[2])
+print()
+print("Score: ", hill[0])
+print()
 
 #Genetic Alg input: py geneticAlg.py (n) (encodedtext)
-etext = getInputGenAlg()
-thing = genAlg(etext)
+# etext = getInputGenAlg()
+# thing = genAlg(etext)
 
 
 

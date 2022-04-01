@@ -9,9 +9,8 @@ types = {"I0": " " * 12 + "####", "I1": "#" + "   " + "#" + "   " + "#" + "   " 
          "Z0": " " * 8 + "##  " + " ## ", "Z1": " " * 4 + " #  " + "##  " + "#   ", 
          "J0": " " * 8 + "#   " + "### ", "J1": " " * 4 + "##  " + "#   " + "#   ", "J2": " " * 8 + "### " + "  # ", "J3": " " * 4 + " #  " + " #  " + "##  ",
          "L0": " " * 8 + "  # " + "### ", "L1": " " * 4 + "#   " + "#   " + "##  ", "L2": " " * 8 + "### " + "#   ", "L3": " " * 4 + "##  " + " #  " + " #  "}
-
+colHeights = []
 lowestpoints = {}
-
 
 def input():
     # strboard = sys.argv[1]
@@ -43,8 +42,15 @@ def printTypes():
                 print(types[i][x-1:x], end = "")
         print()
 
+def printPiece(i):
+    for x in range(1, len(types[i])+1):
+        if(x%4 == 0):
+            print(types[i][x-1:x])
+        else:
+            print(types[i][x-1:x], end = "")
 
-def getHeights(board):
+def getColHeights(board):
+    global colHeights
     heights = []
     for w in range(10):
         for h in range(20):
@@ -60,18 +66,36 @@ def output(strboard):
         r.write(printFancyBoard(strboard))
 
 
-def addPiece(board, piece):
+def getHeight(piece):
     block = types[piece]
     maxblockH = 0
     for x in range(4):
-        if(block[x:x+1] == "#"):
-            
-    for i in range(10):
+        if("#" in block[x*4:x*4+4]):
+            maxblockH = 4-x
+            break
+    
+    heightList = [maxblockH]
+    for w in range(4):
+        for h in range(4):
+            index = w + (h*4)
+            if(block[index:index+1] == "#"):
+                heightList.append((4-h) - maxblockH)
+                break
+    
+    return heightList
 
-    return "Alan"
+def addPiece(board, piece):
+    heights = getHeight(piece)
+    index = []
+    for w in range(10):
+        for h in heights:
+            if(colHeights[w+1])
+            
+            
 
 
 strboard = input()
 printFancyBoard(strboard)
 # printTypes()
-print(getHeights(strboard))
+print(getColHeights(strboard))
+print(getHeight("O0"))
