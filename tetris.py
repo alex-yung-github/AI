@@ -102,37 +102,46 @@ def addPiece(board, piece, colHeights):
     indexes = []
     thiccc = 10 - (len(pieceheights)-2)
     for w in range(thiccc):
-        if(pieceheights[0] + colHeights[w] > 20):
-            indexes.append(-1)
-        else:
-            if(len(pieceheights) < 3):
-                tempind = colHeights[w]+1
+        if(len(pieceheights) < 3):
+            tempind = colHeights[w]+1
+            if(tempind + pieceheights[0] -1 > 20):
+                indexes.append(-1)
             else:
-                tempind = colHeights[w]
-                for h in range(2, len(pieceheights)):
-                    newCand = 0
-                    if(pieceheights[1] < pieceheights[h]):
-                        if(colHeights[w+h-1] > colHeights[w]):
-                            newCand = colHeights[w+h-1]
+                indexes.append(tempind)
+        else:
+            tempind = colHeights[w]-1
+            for h in range(2, len(pieceheights)):
+                newCand = 0
+                if(pieceheights[h-1] < pieceheights[h]):
+                    if(colHeights[w+h-1] > colHeights[w]):
+                        if(colHeights[w] - colHeights[w+h-1] >= pieceheights[h]):
+                            newCand = colHeights[w+h-1] + 1 - pieceheights[h]
                         else:
-                            newCand = colHeights[w]+1
-                    elif(pieceheights[1] > pieceheights[h]):
-                        if(colHeights[w] > colHeights[w+h-1]):
                             newCand = colHeights[w+h-1]
-                        else:
-                            newCand = colHeights[w+h-1] + 1
                     else:
-                        newCand = max(colHeights[w+h-1], colHeights[w]) + 1
-                    if(newCand > tempind):
-                        tempind = newCand
-
+                        newCand = colHeights[w+h-2]+1
+                elif(pieceheights[h-1] > pieceheights[h]):
+                    if(colHeights[w] > colHeights[w+h-1]):
+                        if(colHeights[w] - colHeights[w+h-1] >= (pieceheights[h]*-1)):
+                            newCand = colHeights[w] + 1 - (pieceheights[h]*-1)
+                        else:
+                            newCand = colHeights[w+h-1]
+                    else:
+                        newCand = colHeights[w+h-1] + 1
+                else:
+                    newCand = max(colHeights[w+h-1], colHeights[w]) + 1
+                if(newCand > tempind):
+                    tempind = newCand
+                if(tempind + pieceheights[0] -1 > 20):
+                    tempind = -1
+                    break
             indexes.append(tempind)
     print(indexes)
-    # boardsList = []
-    # for i in range(len(indexes)):
-    #     tempboard = placePieces(board, indexes[i], i, piece)
-    #     boardsList.append(tempboard)
-    # return boardsList
+    boardsList = []
+    for i in range(len(indexes)):
+        tempboard = placePieces(board, indexes[i], i, piece)
+        boardsList.append(tempboard)
+    return boardsList
 
 def placePieces(board, indexR, indexC, piece):
     initR = 4
@@ -174,13 +183,12 @@ strboard = input()
 
 printFancyBoard(strboard)
 colHeights = getColHeights(strboard)
-printPiece("L3")
-powsibilities = addPiece(strboard, "L3", colHeights)
+printPiece("J2")
+powsibilities = addPiece(strboard, "J2", colHeights)
 # for board in powsibilities:
 #     if(board == None):
 #         print("GAME OVER")
 #     else:
 #         printFancyBoard(board)
 
-
-#  output(strboard)
+# output(strboard)
