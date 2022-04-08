@@ -12,8 +12,8 @@ types = {"I0": " " * 12 + "####", "I1": "#" + "   " + "#" + "   " + "#" + "   " 
 lowestpoints = {}
 
 def input():
-    strboard = sys.argv[1]
-    # strboard = "          #         #         #      #  #      #  #      #  #     ##  #     ##  #     ## ##     ## #####  ########  ######### ######### ######### ######### ########## #### # # # # ##### ###   ########"
+    # strboard = sys.argv[1]
+    strboard = "          #         #         #      #  #      #  #      #  #     ##  #     ##  #     ## ##     ## #####  ########  ######### ######### ######### ######### ########## #### # # # # ##### ###   ########"
     return strboard
 
 def getFancyBoard(board):
@@ -65,10 +65,10 @@ def output(board):
             colHeights = getColHeights(board)
             powsibilities = addPiece(board, i, colHeights)
             for b in powsibilities:
-                if(b == None):
+                if(b[0] == None):
                     r.write("GAME OVER\n")
                 else:
-                    r.write(b + "\n")
+                    r.write(b[0] + "\n")
 
 
 def getHeight(piece): #returns maxblockH, then other heights relative
@@ -208,14 +208,64 @@ def placePieces(board, indexR, indexC, piece):
 
 def removeLines(board):
     newboard = board
+    linesRemoved = 0
     for r in range(0, len(newboard), 10):
         if(newboard[r:r+10] == "##########"):
             newboard = " " * 10 + newboard[0:r] + newboard[r+10:]
             r-=10
-    return newboard
+            linesRemoved+=1
+    return (newboard, linesRemoved)
+
+#reminder:  1  row  cleared  -->  40  points,  2  -->  100,  
+#           3  -->  300,  4  -->  1200 return  points
+def playGame(strategy):
+    board = makeBoard()
+    points = 0
+    while(board != "GAME OVER"):
+        piece = random.choice(list(types))
+        possboards = placePieces(piece)
+        boardScores = []
+        for i in possboards:
+            boardScores.append(heuristic(i, strategy))
 
 
+    
 
+def makeBoard():
+    return " " * 200
+
+def heuristic(board, strategy):
+    a, b, c, d, e = strategy
+    value = 0
+    value += a * max(getColHeights(board))
+    value += b * getMaxWell(board)
+    value += c * getHoles(board)
+
+def getMaxWell(board):
+    wellDepths = []
+    for w in range(10):
+        wellDepth = 0
+        for h in reversed(range(20)):
+            index = w + (h*10)
+            if(int((index-1)/10) != int(index/10) and board[index+1:index+2] == "#" and board[index:index+1] == " "):
+                wellDepth += 1
+            elif(int((index-1)/10) == int(index/10) and board[index-1:index] == "#" and board[index+1:index+2] == "#" and board[index:index+1] == " "):
+                wellDepth += 1
+            elif(board[index:index+1] == "#"):
+                wellDepth = 0
+        wellDepths.append(wellDepth)
+    print(wellDepths)
+    return max(wellDepths)
+
+def getHoles(board):
+    holes = 0
+    for w in range(10):
+        for h in reversed(range(1, 20)):
+            index = w + (h*10)
+            if(board[index:index+1] == " " and board[index-10:index-9] == "#"):
+                holes += 1
+    print(holes)
+    return holes
 
 
 strboard = input()
@@ -228,4 +278,11 @@ strboard = input()
 # for board in powsibilities:
 #         printFancyBoard(board)
 
-output(strboard)
+# output(strboard)
+
+printFancyBoard(strboard)
+colHeights = getColHeights(strboard)
+printPiece("L0")
+
+getMaxWell(strboard)
+getHoles(strboard)
