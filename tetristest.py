@@ -12,8 +12,9 @@ types = {"I0": " " * 12 + "####", "I1": "#" + "   " + "#" + "   " + "#" + "   " 
 lowestpoints = {}
 
 def input():
-    strboard = sys.argv[1]
-    # strboard = "          #         #         #      #  #      #  #      #  #     ##  #     ##  #     ## ##     ## #####  ########  ######### ######### ######### ######### ########## #### # # # # ##### ###   ########"
+    # strboard = sys.argv[1]
+    strboard = "          #         #         #      #  #      #  #      #  #     ##  #     ##  #     ## ##     ## #####  ########  ######### ######### ######### ######### ########## #### # # # # ##### ###   ########"
+    # strboard = "          #         #         #      #  #      #  #      #  #     ##  #     ##  #     ## ###    ## #####  ########  ######### ######### ######### ######### ########## #### # # # # ##### ###   ########"
     return strboard
 
 def getFancyBoard(board):
@@ -223,8 +224,9 @@ strboard = input()
 
 # printFancyBoard(strboard)
 # colHeights = getColHeights(strboard)
-# printPiece("L0")
-# powsibilities = addPiece(strboard, "L0", colHeights)
+# print(colHeights)
+# printPiece("L3")
+# powsibilities = addPiece(strboard, "L3", colHeights)
 # for board in powsibilities:
 #         printFancyBoard(board)
 
