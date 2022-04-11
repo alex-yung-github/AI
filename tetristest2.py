@@ -198,8 +198,9 @@ def addPiece(board, piece, colHeights):
         toReturnBoard = (tempboard, 0)
         if(tempboard != "GAME OVER" and tempboard != None):
             toReturnBoard = removeLines(tempboard)
-        # printFancyBoard(toReturnBoard)
-        boardsList.append(toReturnBoard)
+        # printFancyBoard(toReturnBoard)0
+        toReturn = toReturnBoard + tuple([len(pieceheights)-1]) + tuple([i])
+        boardsList.append(toReturn)
     return boardsList
 
 def placePieces(board, indexR, indexC, piece):
@@ -242,13 +243,13 @@ def removeLines(board):
 def playGame(strategy):
     board = makeBoard()
     points = 0
+    colHeights = [0,0,0,0,0,0,0,0,0,0]
     while(board != "GAME OVER" and board != None):
         piece = random.choice(generaltypes)
-        colHeights = getColHeights(board)
         bestList = []
         for t in genTypesandOrientation[piece]:
             possboards = addPiece(board, t, colHeights)
-            boardScores = heuristicscoring(possboards, strategy)
+            boardScores = heuristicscoring(possboards, strategy, colHeights)
             best = max(boardScores)
             bestList.append(best)
         whoo = max(bestList)
@@ -256,13 +257,29 @@ def playGame(strategy):
             break
         points += getPoints(whoo[2])
         board = whoo[1]
+        # printFancyBoard(board)
+        colHeights = whoo[3]
     return (board, points)
 
-def heuristicscoring(possboards, strategy):
+def newColHeights(board, colHeights, piecelen, col):
+    cH = colHeights
+    for w in range(col, col+piecelen):
+        tempcH = 0
+        for h in range(20):
+            index = w + (h*10)
+            if(board[index:index+1] == "#"):
+                tempcH = 20-h
+                break
+        cH[w] = tempcH
+    return cH
+
+
+def heuristicscoring(possboards, strategy, colHeights):
     toReturn = []
     for i in possboards:
+        tempColHeights = colHeights.copy()
         # printFancyBoard(i[0])
-        toReturn.append(heuristic(i, strategy))
+        toReturn.append(heuristic(i, strategy, tempColHeights))
     return toReturn
 
 def sortFix(num):
@@ -285,21 +302,24 @@ def getPoints(removedLines):
 def makeBoard():
     return " " * 200
 
-def heuristic(boardinfo, strategy):
+def heuristic(boardinfo, strategy, prevColHeights):
     board = boardinfo[0]
     linesRemoved = boardinfo[1]
+    piecelen = boardinfo[2]
+    col = boardinfo[3]
     if(board == "GAME OVER" or board == None):
         return (-10000, "GAME OVER", linesRemoved)
     else:
         a, b, c, d, e = strategy
+        newColHeight = newColHeights(board, prevColHeights, piecelen, col)
         value = 0
-        value += a * max(getColHeights(board))
+        value += a * max(newColHeight)
         value += b * getMaxWell(board)
         value += c * getHoles(board)
         value += d * linesRemoved
-        value += e * getFlatness(board)
+        value += e * getFlatness(newColHeight)
         value = float(value)
-        return (value, board, linesRemoved)
+        return (value, board, linesRemoved, newColHeight)
 
 def getMaxWell(board):
     wellDepths = []
@@ -328,8 +348,8 @@ def getHoles(board):
     # print(holes)
     return holes
 
-def getFlatness(board): #gets sample standard deviation, not population
-    std = stdev(getColHeights(board))
+def getFlatness(colHeights): #gets sample standard deviation, not population
+    std = stdev(colHeights)
     return std
 
 def population(n):  #gets n number of strategies
