@@ -499,6 +499,7 @@ def userInput():
                 stowaway(end, filename)
                 break
             elif(newdecision == "P"):
+                print(end)
                 playGame(end[0][1])
                 newdecision = input("(P)lay game with current strategy, (S)ave current progress, or (C)ontinue?: ")
             elif(newdecision == "C"):

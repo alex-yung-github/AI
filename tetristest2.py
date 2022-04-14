@@ -22,13 +22,13 @@ genTypesandOrientation = {"I": ["I0", "I1"],
                          }
 lowestpoints = {}
 NUM_TRIALS = 5
-STRATEGY_PARAM = 6
+STRATEGY_PARAM = 7
 POPULATION_SIZE = 500
-NUM_CLONES = 4
-TOURNEY_SIZE = 20
-TOURNAMENT_WIN_PROBABILITY = .75
+NUM_CLONES = 2
+TOURNEY_SIZE = 100
+TOURNAMENT_WIN_PROBABILITY = .30
 CROSSOVER_POINTS = 2
-MUTATION_RATE = .5
+MUTATION_RATE = .8
 
 def getInput():
     # strboard = sys.argv[1]
@@ -332,77 +332,48 @@ def heuristic(boardinfo, strategy, prevColHeights):
     if(board == "GAME OVER" or board == None):
         return (-10000, "GAME OVER", linesRemoved)
     else:
-        a, b, c, d, e, f = strategy
+        a, b, c, d, e, f ,g= strategy
         if(linesRemoved == 0):
             beegcols = newColHeights(board, prevColHeights, piecelen, col)
         else:
             beegcols = getColHeights(board)
         value = 0
         value += a * max(beegcols)
-        value += b * cumheight(beegcols)
-        value += c * getHoles(board)
+        value += b * sum(beegcols)
+        h = getHoles(board)
+        value += c * h[0]
         value += d * linesRemoved
-        value += e * getFlatness(beegcols)
-        value += f * minmaxdiffcols(beegcols)
+        value += e * minmaxdiffcols(beegcols)
+        value += f * bumpiness(beegcols)
+        value += g * h[1]
         value = float(value)
         return (value, board, linesRemoved, beegcols)
 
-# def getMaxWell(board, colhets):
-    # wellDepths = []
-    # for w in range(10):
-    #     wellDepth = 0
-    #     if(w == 0):
-    #         wellDepth = colhets[w+1] - colhets[w]
-    #     elif(w == 9):
-    #         welldepth = colhets[w-1] - colhets[w]
-    #     else:
-    #         lowerside = min(colhets[w+1], colhets[w-1])
-    #         wellDepth = tallestsid
-        # for h in reversed(range(20)):
-        #     index = w + (h*10)
-        #     if(int((index-1)/10) != int(index/10) and board[index+1:index+2] == "#" and board[index:index+1] == " "):
-        #         wellDepth += 1
-        #     elif(int((index-1)/10) == int(index/10) and board[index-1:index] == "#" and board[index+1:index+2] == "#" and board[index:index+1] == " "):
-        #         wellDepth += 1
-        #     elif(int((index+1)/10) != int(index/10) and board[index-1:index] == "#" and board[index:index+1] == " "):
-        #         wellDepth +=1
-        #     elif(board[index:index+1] == "#"):
-        #         wellDepth = 0
-        #         break
-        # wellDepths.append(wellDepth)
-    # return max(wellDepths)
-def cumheight(colheights):
-    return sum(colheights)
+def bumpiness(colheights):
+    all = []
+    for i in range(len(colheights)-1):
+        val = abs(colheights[i+1] - colheights[i])
+        all.append(val)
+    return sum(all)
 
-# def getHoles(board):
-#     holes = 0
-#     holesizes = []
-#     for w in range(10):
-#         holebigness = 1
-#         for h in reversed(range(1, 20)):
-#             index = w + (h*10)
-#             if(board[index:index+1] == " " and board[index-10:index-9] == "#"):
-#                 holes += 1
-#                 holesizes.append(holebigness)
-#                 holebigness = 1
-#             if(board[index:index+1] == " " and board[index-10:index-9] == " "):
-#                 holebigness += 1
-        
-            
-    # print(holes)
-    # if(len(holesizes) > 0):
-    #     return (holes, sum(holesizes)/len(holesizes))
-    # else:
-    #     return (holes, 0)
+def minmaxdiffcols(beegcols):
+    return max(beegcols) - min(beegcols)
+
+
 def getHoles(board):
     holes = 0
+    blockades = 0
     for w in range(10):
         for h in reversed(range(1, 20)):
             index = w + (h*10)
             if(board[index:index+1] == " " and board[index-10:index-9] == "#"):
                 holes += 1
+                place = index - 10
+                while(board[place:place+1] != " " and place >= 0):
+                    place -=10 
+                    blockades += 1
     # print(holes)
-    return holes
+    return (holes,blockades)
 
 def getFlatness(cc): #gets sample standard deviation, not population
     std = stdev(cc)
@@ -432,15 +403,16 @@ def selection(sortedStrats): #selects 2 of the population of strategies based on
     t1.sort(reverse = True)
     t2.sort(reverse = True)
     parents = []
-    for i in t1:
-        if(random.random() < TOURNAMENT_WIN_PROBABILITY):
-            parents.append(i[1])
-            break
-
-    for i in t2:
-        if(random.random() < TOURNAMENT_WIN_PROBABILITY):
-            parents.append(i[1])
-            break
+    while(len(parents) < 1):
+        for i in t1:
+            if(random.random() < TOURNAMENT_WIN_PROBABILITY):
+                parents.append(i[1])
+                break
+    while(len(parents) < 2):
+        for i in t2:
+            if(random.random() < TOURNAMENT_WIN_PROBABILITY):
+                parents.append(i[1])
+                break
     
     return parents
 
@@ -483,8 +455,10 @@ def dotheprocess():
     print("Average Score: ", sum(netscores)/len(netscores), )
     print("Best Strategy and Score: ", best[1], "with", best[0], "points")
 
+    # for i in range(len(cInit)):
+    #     score = random.uniform(-10, 10)
+    #     cScoresInit.append((score,cInit[i]))
     return cScoresInit
-    # return cInit
 
 def dotheprocesspt2(cInit):
     cScoresInit = []
@@ -497,10 +471,11 @@ def dotheprocesspt2(cInit):
     best = max(cScoresInit)
     print("Average Score: ", sum(netscores)/len(netscores), )
     print("Best Strategy and Score: ", best[1], "with", best[0], "points")
-    # print(cScoresInit)
-    # bestcipher = cScoresInit[0][1]
-    # print(bestcipher)
+    # for i in range(len(cInit)):
+    #     score = random.uniform(-10, 10)
+    #     cScoresInit.append((score,cInit[i]))
     return cScoresInit
+
 
 def genAlg(cScoresInit):
     cScoresInit.sort(reverse = True)
@@ -543,7 +518,7 @@ def creak(file):
 
 
 def userInput():
-    transferred = False
+    # transferred = False
     decision = input("Start (N)ew or (L)oad Saved: ")
     if(decision == "N"):
         end = dotheprocess()
@@ -555,14 +530,15 @@ def userInput():
                 stowaway(end, filename)
                 break
             elif(newdecision == "P"):
-                tt = playGamewithPrint(end[0])
+                end.sort(reverse = True)
+                tt = playGamewithPrint(end[0][1])
                 print("Board: ", tt[0])
                 print("Score: ", tt[1])
                 newdecision = input("(P)lay game with current strategy, (S)ave current progress, or (C)ontinue?: ")
             elif(newdecision == "C"):
                 end = genAlg(end)
-                dotheprocesspt2(end)
-                transferred = True
+                end = dotheprocesspt2(end)
+                # transferred = True
     elif(decision == "L"):
         file = input("What filename? ")
         end = creak(file)
@@ -596,7 +572,11 @@ def userInput():
 
 # strboard = getInput()
 # printFancyBoard(strboard)
+# colH = getColHeights(strboard)
+# print(max(colH))
+# print(bumpiness(colH))
 # print(getHoles(strboard))
+# print(minmaxdiffcols(colH))
 
 # printFancyBoard(strboard)
 # colHeights = getColHeights(strboard)
@@ -608,4 +588,4 @@ def userInput():
 # output(strboard)
 
 userInput()
-# playGame([-0.3300012957438927, -0.10186921395796733, -0.9801117842452796, -0.3047580798183338, -0.038327557184860694])
+# playGamewithPrint([-0.3300012957438927, -0.10186921395796733, -0.9801117842452796, -0.3047580798183338, -0.038327557184860694])
