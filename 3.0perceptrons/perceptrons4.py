@@ -12,10 +12,20 @@ LAMBDA = 1
 
 
 
-def inputperp4():
-    point = sys.argv[1]
-    point = ast.literal_eval(point) 
-    return point
+def input():
+    a = 0
+    b = 0
+    if(len(sys.argv) == 1):
+        return None
+    elif(len(sys.argv) == 2):
+        a = sys.argv[1]
+        a = ast.literal_eval(a) 
+        return (a, 1)
+    elif(len(sys.argv) == 3):
+        a = float(sys.argv[1])
+        b = float(sys.argv[2])
+        return ((a, b), 2)
+
 
 def f(n): 
     return 1 if n > 0 else 0 
@@ -84,8 +94,8 @@ def getInput(bits):
     zeTruth.sort(reverse = True)
     return zeTruth
 
-def runXOR(wL, bL):
-    inps = getInput(2)
+def runXOR(inps, wL, bL):
+    # inps = getInput(2)
     print("Perceptrons XOR Values: ")
     #XOR HAPPENS HERE
     for i in inps:
@@ -108,8 +118,8 @@ def configureDiamond():
 
 def configureCircle():
     # b1 = np.array([-1, -1, -1, -1])
-    b1 = np.array([2, 2, 2, 2])
-    b2 = np.array([-3.5])
+    b1 = np.array([1.35, 1.35, 1.35, 1.35])
+    b2 = np.array([-3])
 
     w1 = np.array([[-1, 1, -1, 1], [1,-1,-1,1]])
     w2 = np.array([1,1,1,1])
@@ -150,11 +160,6 @@ def runCircle(wL, bL):
 
 def f2(n): 
     asdf = 1 / (1+math.e**(-1 * n))
-    print(asdf)
-    if(asdf > .5):
-        asdf = 1
-    else:
-        asdf = 0
     return asdf
 
 def p_net_sigmoid(A, x, w_list, b_list):
@@ -166,7 +171,12 @@ def p_net_sigmoid(A, x, w_list, b_list):
         bi = b_list[i]
         temp = ai@wi + bi
         ai = vectorizedF(temp)
-    return ai[0]
+    asdf = ai[0]
+    if(asdf > .5):
+        asdf = 1
+    else:
+        asdf = 0
+    return asdf
 
 def getCircInputs():
     toReturn = []
@@ -174,18 +184,37 @@ def getCircInputs():
         toReturn.append((random.uniform(0, 1), random.uniform(0, 1)))
 
     return toReturn
-t = configureXOR()
-wL = t[0]
-bL = t[1]
-runXOR(wL, bL)
+# t = configureXOR()
+# wL = t[0]
+# bL = t[1]
+# runXOR(wL, bL)
 
-vb = configureDiamond()
-wLD = vb[0]
-bLD = vb[1]
-runDiamond([(1, 1), (1, 0), (0, 1), (0,0)], wLD, bLD) #not inclusive
-# runNetwork([(0,0)], wLD, bLD)
+# vb = configureDiamond()
+# wLD = vb[0]
+# bLD = vb[1]
+# runDiamond([(1, 1), (1, 0), (0, 1), (0,0)], wLD, bLD) #not inclusive
+# # runNetwork([(0,0)], wLD, bLD)
 
-c = configureCircle()
-cc = vb[0]
-ccc = vb[1]
-runCircle(cc, ccc)
+# c = configureCircle()
+# cc = c[0]
+# ccc = c[1]
+# runCircle(cc, ccc)
+
+inp = input()
+if(inp == None):
+    c = configureCircle()
+    cc = c[0]
+    ccc = c[1]
+    runCircle(cc, ccc)
+elif(inp[1] == 1):
+    t = configureXOR()
+    wL = t[0]
+    bL = t[1]
+    inputs = inp[0]
+    runXOR([inputs], wL, bL)
+elif(inp[1] == 2):
+    vb = configureDiamond()
+    print(inp)
+    wLD = vb[0]
+    bLD = vb[1]
+    runDiamond([inp[0]], wLD, bLD) #not inclusive
