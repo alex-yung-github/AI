@@ -23,7 +23,7 @@ def f(n):
 def backprop(epochs, trainset, wList, bList):
     values = []
     for i in range(epochs):
-        vectorizedF = np.vectorize(A)
+        vectorizedF = np.vectorize(f)
         for x, y in trainset:
             ai = np.array(x)
             ai = ai.transpose()
