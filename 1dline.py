@@ -9,8 +9,8 @@ import numpy as np
 import math
 
 def inputpt1():
-    # var = sys.argv[1]
-    var = "B"
+    var = sys.argv[1]
+    # var = "B"
     return var
 
 def fnA(arr):
@@ -60,7 +60,7 @@ def gradDescpt1(inp):
     elif(inp == "B"):
         vals = funcB(start[0], start[1])
         lamb = one_d_minimize(make_functB(start[0], start[1]), 0, 1, 10**-8)
-    print(lamb)
+    # print(lamb)
     start = (start[0] - (lamb * vals[0][0]), start[1] - (lamb * vals[0][1]))
     changeMag = (math.sqrt(vals[0][1]**2 + vals[0][0]**2))
     while(vals[0][1] != 0 and orderOfMagnitude(changeMag) > -7):
@@ -73,7 +73,7 @@ def gradDescpt1(inp):
             lamb = one_d_minimize(make_functA(start[0], start[1]), 0, 1, 10**-8)
         elif(inp == "B"):
             lamb = one_d_minimize(make_functB(start[0], start[1]), 0, 1, 10**-8)
-        print(lamb)
+        # print(lamb)
         changeMag = (math.sqrt(vals[0][1]**2 + vals[0][0]**2))
     return (start, vals)
 
