@@ -28,48 +28,61 @@ def videonetwork():
     w2 = np.array([[1, 2], [-1, -2]])
     b1 = np.array([1, -1])
     b2 = np.array([-.5, .5])
-    return ([w1, w2], [b1, b2])
+    return ([0, w1, w2], [0, b1, b2])
 
 def f(n):
     asdf = 1 / (1+math.e**(-1 * n))
     return asdf
 
-def fprime(n):
-    asdf = (math.e**(-1*n))/(1+(math.e**(-1 * n))**2)
+def fprimo(n):
+    asdf = (math.e**(-1*n))/((1+(math.e**(-1 * n)))**2)
     return asdf
 
 def findError(x, y, wList, bList):
     vectorizedF = np.vectorize(f)
     ai = np.array(x)
-    for i in range(len(wList)):
-        ai = ai.transpose()
+    outputs = []
+    dotList = []
+    alist = []
+    outputs.append(ai)
+    for i in range(1, len(wList)):
+        # ai = ai.transpose()
         # print(ai)
         wi = wList[i]
         bi = bList[i]
         temp = ai@wi + bi
+        dotList.append(temp)
         ai = vectorizedF(temp)
+        outputs.append(ai)
         # print(ai)
         # print("temp: ", temp)
+
+    fprime = np.vectorize(fprimo)
+    vecX = np.array(x)
+    vecY = np.array(y)
+    deltaN = fprime(outputs[-1]) * (vecY - outputs[-1])
+
     asdf = 0
     for i in range(len(y)):
         asdf += ((1/2) * (y[i]-ai[i])**2)
-    yes = []
-    vecX = np.array(x)
-    vecY = np.array(y)
-    for w in range(len(wList)):
-        val = (vecX - vecY) * fprime(wList[w]@x+bList[w])
-        yes.append(val)
 
+    deltas = [0] * len(wList)
+    deltas[-1] = deltaN
     newWList = []
-    for i in range(len(wList)):
-        partialderiv = yes[i]
-        newweight = wList[i] + (yes[i] * LAMBDA)
-        newWList.append(newweight)
-
     newBList = []
-    for i in range(len(bList)):
-        newB = bList[i] + (yes[i] * LAMBDA)
-        newBList.append(newB)
+    for w in range(len(wList)-2, 0, -1):
+        deltaTemp = fprime(dotList[w]) * (deltas[w+1]@(wList[w+1].T))
+        # deltaTemp = fprime(ai) * (vecY - ai)
+        deltas[w] = deltaTemp
+
+    newBList.append(0)
+    newWList.append(0)
+    for l in range(1, len(wList)):
+        bNew = bList[l] + (LAMBDA*deltas[l])
+        wNew = wList[l] + (LAMBDA*((outputs[l-1].T)@deltas[l]))
+        newWList.append(wNew)
+        newBList.append(bNew)
+        
 
     return (asdf, newWList, newBList)
 
@@ -101,8 +114,13 @@ stuff = videonetwork()
 wL = stuff[0]
 bL = stuff[1]
 sheesh = findError(vals1, vals2, wL, bL)
+print()
+print("Run 1: ")
 print(sheesh)
+print()
 temp = sheesh[1]
 temp2 = sheesh[2]
 sheesh2 = findError(vals1, vals2, temp, temp2)
+print("Run 2: ")
 print(sheesh2)
+print()
