@@ -1,14 +1,8 @@
-from statistics import stdev
 import sys
-from  math  import  log
-import string
-import random
-import itertools
-import ast
 import numpy as np
 import math
 
-LAMBDA = .1
+LAMBDA = 1
 
 def inp1():
     epochs = 3
@@ -26,8 +20,8 @@ def getTrainSet(file):
 def videonetwork():
     w1 = np.array([[1, -.5], [1,.5]])
     w2 = np.array([[1, 2], [-1, -2]])
-    b1 = np.array([1, -1])
-    b2 = np.array([-.5, .5])
+    b1 = np.array([[1, -1]])
+    b2 = np.array([[-.5, .5]])
     return ([0, w1, w2], [0, b1, b2])
 
 def f(n):
@@ -41,86 +35,108 @@ def fprimo(n):
 def findError(x, y, wList, bList):
     vectorizedF = np.vectorize(f)
     ai = np.array(x)
-    outputs = []
-    dotList = []
     alist = []
-    outputs.append(ai)
+    dotList = []
+    alist.append(ai)
+    dotList.append(ai)
     for i in range(1, len(wList)):
         # ai = ai.transpose()
         # print(ai)
         wi = wList[i]
         bi = bList[i]
-        temp = ai@wi + bi
-        dotList.append(temp)
-        ai = vectorizedF(temp)
-        outputs.append(ai)
+        dot = ai@wi + bi
+        dotList.append(dot)
+        ai = vectorizedF(dot)
+        alist.append(ai)
         # print(ai)
         # print("temp: ", temp)
 
     fprime = np.vectorize(fprimo)
     vecX = np.array(x)
     vecY = np.array(y)
-    deltaN = fprime(outputs[-1]) * (vecY - outputs[-1])
+    deltaN = fprime(dotList[-1]) * (vecY - alist[-1])
 
-    asdf = 0
-    for i in range(len(y)):
-        asdf += ((1/2) * (y[i]-ai[i])**2)
+    v1 = np.linalg.norm(vecY-ai)
+    asdf = (1/2) * (v1**2)
+    # for i in range(len(y[0])):
+    #     asdf += ((1/2) * (y[0][i]-ai[0][i])**2)
 
     deltas = [0] * len(wList)
     deltas[-1] = deltaN
     newWList = []
     newBList = []
     for w in range(len(wList)-2, 0, -1):
-        deltaTemp = fprime(dotList[w]) * (deltas[w+1]@(wList[w+1].T))
+        deltaL = fprime(dotList[w]) * (deltas[w+1]@(wList[w+1].T))
         # deltaTemp = fprime(ai) * (vecY - ai)
-        deltas[w] = deltaTemp
+        deltas[w] = deltaL
 
     newBList.append(0)
     newWList.append(0)
     for l in range(1, len(wList)):
         bNew = bList[l] + (LAMBDA*deltas[l])
-        wNew = wList[l] + (LAMBDA*((outputs[l-1].T)@deltas[l]))
+        wNew = wList[l] + (LAMBDA*((alist[l-1].T)@deltas[l]))
         newWList.append(wNew)
         newBList.append(bNew)
         
-
     return (asdf, newWList, newBList)
 
-
-def backprop(epochs, trainset, wList, bList):
-    values = []
+def realbackprop(epochs, x, y, wList, bList):
+    newW = wList
+    newB = bList
+    print()
     for i in range(epochs):
-        vectorizedF = np.vectorize(f)
-        for x, y in trainset:
-            ai = np.array(x)
-            ai = ai.transpose()
-            for i in range(len(wList)):
-                wi = wList[i]
-                bi = bList[i]
-                temp = ai@wi + bi
-                ai = vectorizedF(temp)
-            asdf = ai[0]
-            if(asdf > .5):
-                asdf = 1
-            else:
-                asdf = 0
-            values.append((x, y), asdf)
-    return values
+        print("Run", i+1, "Errors: ")
+        for l in range(len(x)):
+            sheesh = findError([x[l]], [y[l]], newW, newB)
+            print(sheesh[0])
+            newW = sheesh[1]
+            newB = sheesh[2]
+        print()
+    return (newW, newB)
+
+def run(x, wList, bList):
+    vectorizedF = np.vectorize(f)
+    ai = np.array(x)
+    for i in range(1, len(wList)):
+        wi = wList[i]
+        bi = bList[i]
+        temp = ai@wi + bi
+        ai = vectorizedF(temp)
+    asdf = ai[0]
+    asdf1 = beeground(asdf[0])
+    asdf2 = beeground(asdf[1])
+    return (x, asdf1, asdf2)
+
+def beeground(num):
+    toReturn = 0
+    if(num > .5):
+        toReturn =1 
+    else:
+        toReturn = 0
+    return toReturn
+    
+
+def sumStuff():
+    w1 = 2 * np.random.rand(2, 2) - 1
+    w2 = 2 * np.random.rand(2, 2) - 1
+    b1 = 2 * np.random.rand(1, 2) - 1
+    b2 = 2 * np.random.rand(1, 2) - 1
+    return ([0, w1, w2], [0, b1, b2])
 
 # inputs = inp1()
-vals1 = [2, 3]
-vals2 = [.8, 1]
-stuff = videonetwork()
-wL = stuff[0]
-bL = stuff[1]
-sheesh = findError(vals1, vals2, wL, bL)
-print()
-print("Run 1: ")
-print(sheesh)
-print()
-temp = sheesh[1]
-temp2 = sheesh[2]
-sheesh2 = findError(vals1, vals2, temp, temp2)
-print("Run 2: ")
-print(sheesh2)
-print()
+# vals1 = [[2, 3]]
+# vals2 = [[.8, 1]]
+# stuff = videonetwork()
+# wL = stuff[0]
+# bL = stuff[1]
+# realbackprop(2, vals1, vals2, wL, bL)
+
+vals1 = [[0,0], [0,1], [1, 0], [1, 1]]
+vals2 = [[0,0], [0,1], [0,1], [1, 0]]
+summystuff = sumStuff()
+wSum = summystuff[0]
+bSum = summystuff[1]
+finalstuff = realbackprop(500, vals1, vals2, wSum, bSum)
+useW = finalstuff[0]
+useB = finalstuff[1]
+print(run([[1, 1]], useW, useB))
