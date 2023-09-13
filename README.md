@@ -13,7 +13,7 @@ For this puzzle I had to go from the start point of the first word in the text p
 ## 1.2 Sliding Puzzle 2 
 This puzzle is the same as the previous sliding puzzle, but with much harder "boards." Instead of using BFS, which would be way too slow, we use the inversion count and calculate it using that number
 
-## 1.3 Train Routes [WITH FULL GUI OF PUZZLE]
+## 1.3 Train Routes 
 This puzzle required creating an algorithm that would find the shortest and least costly path from one train station to another given train station costs and distances. Within this puzzle, we compared 3 different algorithms: A*, Djikstra, and BFS. A* and Djikstra tended to perform well.
 > There is one main file to run this
 > - The demos are not to be run, they were useful hints given to us
