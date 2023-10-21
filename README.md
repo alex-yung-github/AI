@@ -51,7 +51,7 @@ This utilizes forward looking and backtracking in order to solve difficult cross
 >  - addBlockingSquares() adds blocking squares
 >  - getInput() gets board size, possible words from text files, and number of blocking squares
 >  - csp_backtracking(): main algorithm that attempts to solve the crossword
-  >  - connectedCheck(): check that checks if the board is valid; if so, return true
+>    - connectedCheck(): check that checks if the board is valid; if so, return true
 >    - possiblePlaces(): returns the possible places to place a new character
 >    - placeBlock(): places a letter
 >    - fillInImpossibles(): removes possible places to place a new letter after placing a letter
