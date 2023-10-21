@@ -44,7 +44,32 @@ This is a much harder 2-player game in which you are trying have the most number
 > - server.py: Used to submit the TJ's Othello competition site to compete against other AIs. You will note both the manual weighting of each part of the board, and the minimax algorithm that takes the weighting into account. The main method is find_next_move and the methods implemented within it. The weighting can be found in the goal_test method.
 
 ## 1.9: Crosswords
+This utilizes forward looking and backtracking in order to solve difficult crossword puzzles. Given a X by Y board by the user, it places random blocking squares, squares where there aren't supposed to be letters, and then attempts to solve the board. These blocking squares must be 3 or more squares, and the number of them can be specified. After that, the algorithm attempts to fill in the crossword with the given words in the wordlist.txt and twentyk.txt. In the end, the algorithm is versatile enough to solve boards that aren't squares (rectangular boards) and also able to solve most boards with size 13x13 or under easily.
+> Main File:
+>  - crosswordspt2.py: Able to solve larger boards than crosswords.py. The other files are txt files for the possible words to use and asedf.py, a file which an unrelated calculation was made.
+> Main method explanations:
+>  - addBlockingSquares() adds blocking squares
+>  - getInput() gets board size, possible words from text files, and number of blocking squares
+>  - csp_backtracking(): main algorithm that attempts to solve the crossword
+  >  - connectedCheck(): check that checks if the board is valid; if so, return true
+>    - possiblePlaces(): returns the possible places to place a new character
+>    - placeBlock(): places a letter
+>    - fillInImpossibles(): removes possible places to place a new letter after placing a letter
+>    - getScore(): gets the score of the board, and within the backtracking it uses the best possible board and chooses that as the next move for each iteration of placing the next letter
 
-# 1.9 - 3.2 Explanations TBD
+## 2.0: Regex
+This project was creating different regex strings that would work towards different requirements. the specifications are listed on TJ's AI grader site: https://ai.sites.tjhsst.edu/. The main files are regexpt1.py to regexp4.py, and they incrementally get harder in terms of the specifications of the strings.
 
+## 2.1 Genetic Algorithms
+Testing with genetic algorithms to help decode encoded strings of text. Though this was a test, the uses of genetic algorithms becomes more useful with the future projects.
+
+## 2.2 Genetic Algorithms and Tetris
+Using genetic algorithms, an algorithm was created to reach over 65000 score in a game of Tetris. Ignore the poor naming conventions and lack of file organization. The main files are listed below--please ignore the other files. Here, the genetic algorithm initializes weights for the strategy parameters, which are the defining parameters that tell the algorithm where to place the next piece. The genetic algorithm then runs on weights and continues until desired accuracies are obtained. The genetic algorithm process is described more below in the main file.
+> Main Files
+> tetrispt2.py: In this file, there are a multitude of helper methods and a main method that runs the genetic algorithm to train a strong Tetris solver. At the bottom in the userInput() method, it asks the user to either create a new algorithm for Tetris or to continue with an existing one. After the user chooses to either create a new algorithm or use an existing one, it prompts the user to either train the algorithm or to use it to play Tetris.
+> Training the algorithm prompts it to create new random weights and run the genetic algorithm. In this genetic algorithm, it uses the weights from one generation, runs them on Tetris and records their scores. The algorithms are sorted from best to worst, and then they are run through many tournaments to create the next generation. The tournament chooses 2 algorithms through a selection process: starting from algorithm 1 (the best algorithm), it has a 75% chance of being a parent. Otherwise, the selection moves to the next parent which also has 75% chance of being chosen (percentage can be changed). This selection continues until a parent is found and repeats a second time. This selection method allows for the best children to be created from the highest scoring parents, while also allowing for variation because the worse algorithms still have a chance to be a parent algorithm. A child is then breeded from the 2 parents by selectively incorporating traits from both parent algorithms. Finally, a mutation is added to the child to add variation. This selection, breeding, and mutation process creates 1 child, and this repeats for however many algorithms are desired per generation. As the algorithms improve, such as after 3 generations, very high scores can be seen when playing Tetris.
+> Playing tetris tests the algorithm in an actual Tetris game, which can be watched through the fancy boards printed in the terminal.
+
+## 3.0 - 3.2: Machine Learning Algorithms
+These machine learning algorithms are described within the ML repository on this account. 
 
